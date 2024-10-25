@@ -9,28 +9,45 @@ const WeatherMap: React.FC<Props> = ({ location }) => {
   const mapRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Simulating map with a placeholder
     if (!mapRef.current) return;
 
-    const mapPlaceholder = document.createElement("div");
-    mapPlaceholder.className =
-      "bg-gray-100 rounded-lg w-full h-full flex items-center justify-center";
-    mapPlaceholder.innerHTML = `
-      <div class="text-center">
-        <p class="text-gray-500 mb-2">Weather Map</p>
-        <p class="text-sm text-gray-400">Location: ${location.name}</p>
-        <p class="text-sm text-gray-400">Coordinates: ${location.lat}, ${location.lon}</p>
-      </div>
-    `;
+    const script = document.createElement("script");
+    script.src = "https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.js";
+    document.body.appendChild(script);
 
-    mapRef.current.innerHTML = "";
-    mapRef.current.appendChild(mapPlaceholder);
+    script.onload = () => {
+      const L = (window as any).L;
+      if (!L) return;
+
+      const map = L.map(mapRef.current).setView(
+        [location.lat, location.lon],
+        10
+      );
+
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: "© OpenStreetMap contributors",
+      }).addTo(map);
+
+      // Add weather layer from OpenWeather
+      L.tileLayer(
+        `https://tile.openweathermap.org/map/temp_new/{z}/{x}/{y}.png?appid=${process.env.NEXT_PUBLIC_OPENWEATHER_API_KEY}`,
+        {
+          attribution: "© OpenWeather",
+        }
+      ).addTo(map);
+
+      // Add marker for the location
+      L.marker([location.lat, location.lon])
+        .addTo(map)
+        .bindPopup(location.name)
+        .openPopup();
+    };
   }, [location]);
 
   return (
     <div>
       <h2 className="text-2xl font-bold mb-4">Weather Map</h2>
-      <div ref={mapRef} className="h-[400px] rounded-lg overflow-hidden" />
+      <div ref={mapRef} className="h-[400px] rounded-lg overflow-hidden"></div>
     </div>
   );
 };

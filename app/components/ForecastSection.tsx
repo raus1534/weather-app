@@ -19,7 +19,7 @@ const ForecastSection: React.FC<Props> = ({ forecast }) => {
             >
               <p className="text-sm text-gray-600">{item.time}</p>
               <img
-                src={`https://openweathermap.org/img/wn/${item.icon}.png`}
+                src={`https://openweathermap.org/img/wn/${item.icon}@2x.png`} // Use a more appropriate size for better quality
                 alt={item.description}
                 className="w-12 h-12 mx-auto"
               />

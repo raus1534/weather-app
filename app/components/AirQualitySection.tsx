@@ -1,5 +1,5 @@
 import { AirPollution } from "../types/weather";
-import { Tooltip } from "./ui/Tooltip";
+import { Tooltip } from "@components/ui/Tooltip";
 
 interface Props {
   airQuality: AirPollution;
@@ -13,7 +13,7 @@ const getAQILevel = (aqi: number) => {
     4: { label: "Poor", color: "bg-red-500" },
     5: { label: "Very Poor", color: "bg-purple-500" },
   };
-  return levels[aqi as keyof typeof levels];
+  return levels[aqi as keyof typeof levels] || levels[1]; // Default to "Good" if no level found
 };
 
 const AirQualitySection: React.FC<Props> = ({ airQuality }) => {
@@ -33,38 +33,15 @@ const AirQualitySection: React.FC<Props> = ({ airQuality }) => {
         </div>
 
         <div className="space-y-2">
-          <div className="flex justify-between">
-            <span className="text-sm text-gray-600">PM2.5</span>
-            <span className="font-medium">
-              {airQuality.components.pm2_5} µg/m³
-            </span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-sm text-gray-600">PM10</span>
-            <span className="font-medium">
-              {airQuality.components.pm10} µg/m³
-            </span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-sm text-gray-600">NO₂</span>
-            <span className="font-medium">
-              {airQuality.components.no2} µg/m³
-            </span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-sm text-gray-600">O₃</span>
-            <span className="font-medium">
-              {airQuality.components.o3} µg/m³
-            </span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-sm text-gray-600">CO</span>
-            <span className="font-medium">
-              {airQuality.components.co} µg/m³
-            </span>
-          </div>
+          {Object.entries(airQuality.components).map(([key, value]) => (
+            <div className="flex justify-between" key={key}>
+              <span className="text-sm text-gray-600">{key.toUpperCase()}</span>
+              <span className="font-medium">{value} µg/m³</span>
+            </div>
+          ))}
         </div>
       </div>
+
       <div className="space-y-2">
         <Tooltip
           label="PM2.5"
@@ -90,7 +67,7 @@ const AirQualitySection: React.FC<Props> = ({ airQuality }) => {
           </div>
         </Tooltip>
 
-        {/* Add similar tooltips for other metrics */}
+        {/* You can add similar tooltips for other metrics */}
       </div>
     </div>
   );
