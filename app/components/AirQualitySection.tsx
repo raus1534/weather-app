@@ -16,7 +16,12 @@ const getAQILevel = (aqi: number) => {
   return levels[aqi as keyof typeof levels] || levels[1]; // Default to "Good" if no level found
 };
 
-const AirQualitySection: React.FC<Props> = ({ airQuality }) => {
+const AirQualitySection: React.FC<Props> = ({
+  airQuality,
+}: {
+  airQuality: AirPollution;
+}) => {
+  if (!airQuality) return;
   const aqiLevel = getAQILevel(airQuality.aqi);
 
   return (

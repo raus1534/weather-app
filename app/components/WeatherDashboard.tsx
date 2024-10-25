@@ -14,70 +14,84 @@ import WeatherMap from "@components/WeatherMap";
 import { LoadingSkeleton } from "@components/ui/LoadingSkeleton";
 import { ErrorState } from "@components/ui/ErrorState";
 
-// Mock Data
-const mockLocation: GeoLocation = {
-  lat: 51.5074,
-  lon: -0.1278,
-  name: "London",
-  country: "GB",
-};
-
-const mockWeather: WeatherData = {
-  temp: 18,
-  feels_like: 17,
-  humidity: 65,
-  wind_speed: 12,
-  description: "Partly cloudy",
-  icon: "03d",
-};
-
-// Fixed base time
-const baseTime = new Date("2024-10-24T00:00:00Z").getTime();
-
+// WeatherDashboard component
 const WeatherDashboard: React.FC = () => {
-  const [location, setLocation] = useState<GeoLocation>(mockLocation);
-  const [currentWeather] = useState<WeatherData>(mockWeather);
+  const [location, setLocation] = useState<GeoLocation | null>(null);
+  const [currentWeather, setCurrentWeather] = useState<WeatherData | null>(
+    null
+  );
   const [forecast, setForecast] = useState<ForecastData[]>([]);
-  const [airQuality] = useState<AirPollution>({
-    aqi: 2,
-    components: {
-      co: 250.34,
-      no2: 15.68,
-      o3: 85.19,
-      pm2_5: 8.25,
-      pm10: 12.47,
-    },
-  });
-  const [loading, setLoading] = useState<boolean>(false);
+  const [airQuality, setAirQuality] = useState<AirPollution | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    // Generate forecast data when the component mounts
-    const mockForecast: ForecastData[] = Array(8)
-      .fill(null)
-      .map((_, index) => {
-        const baseTime = new Date("2024-10-24T00:00:00Z").getTime(); // Fixed dummy base time
-        return {
-          dt: baseTime + index * 3600 * 1000, // Adjust interval if needed
-          temp: 18 + index, // Fixed temperatures for testing
-          icon: "01d", // Fixed icon
-          description: "Sunny", // Fixed description
-          time: new Date(baseTime + index * 3600 * 1000).toLocaleTimeString(
-            [],
-            {
-              hour: "2-digit",
-              minute: "2-digit",
-            }
-          ),
-        };
-      });
+  const fetchUserLocation = async () => {
+    try {
+      const locationResponse = await fetch("https://ipapi.co/json/");
+      if (!locationResponse.ok) {
+        throw new Error("Failed to fetch user location.");
+      }
+      const locationData = await locationResponse.json();
 
-    setForecast(mockForecast);
+      const userLocation: GeoLocation = {
+        lat: locationData.latitude,
+        lon: locationData.longitude,
+        name: locationData.city,
+        country: locationData.country,
+      };
+
+      setLocation(userLocation);
+      return userLocation; // Return the user location
+    } catch (err) {
+      console.error("Error fetching location:", err);
+      setError((err as Error).message || "Failed to fetch user location.");
+      setLoading(false);
+    }
+  };
+
+  const fetchWeatherData = async (userLocation: GeoLocation) => {
+    try {
+      const weatherResponse = await fetch(
+        `/api/weather?lat=${userLocation.lat}&lon=${userLocation.lon}`
+      );
+
+      if (!weatherResponse.ok) {
+        throw new Error("Failed to fetch weather data.");
+      }
+
+      const weatherData = await weatherResponse.json();
+      setCurrentWeather(weatherData.current);
+      setForecast(weatherData.forecast);
+      setAirQuality(weatherData.airQuality);
+    } catch (err) {
+      console.error("Error fetching weather data:", err);
+      setError((err as Error).message || "Failed to fetch weather data.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const loadData = async () => {
+      const userLocation = await fetchUserLocation();
+      if (userLocation) {
+        await fetchWeatherData(userLocation);
+      } else {
+        setLoading(false); // Stop loading if there's no location
+      }
+    };
+    loadData();
   }, []);
 
   const handleRetry = () => {
     setError(null);
-    // Add your retry logic here
+    setLoading(true);
+    // Re-fetch data when retrying
+    fetchUserLocation().then((userLocation) => {
+      if (userLocation) {
+        fetchWeatherData(userLocation);
+      }
+    });
   };
 
   if (loading) {
@@ -100,6 +114,17 @@ const WeatherDashboard: React.FC = () => {
     );
   }
 
+  // Check for data before rendering
+  if (!location || !currentWeather || !forecast.length || !airQuality) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-100 to-blue-300 p-4 md:p-8">
+        <div className="max-w-7xl mx-auto">
+          <LoadingSkeleton />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-100 to-blue-300 p-4 md:p-8">
       <div className="max-w-7xl mx-auto space-y-6">
@@ -108,29 +133,25 @@ const WeatherDashboard: React.FC = () => {
           <SearchLocation onLocationSelect={setLocation} />
         </div>
 
-        {true && (
-          <>
-            {/* Main Weather Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {/* Current Weather */}
-              <div className="lg:col-span-2">
-                <CurrentWeather weather={currentWeather} location={location} />
-              </div>
-              {/* Air Quality */}
-              <div>
-                <AirQualitySection airQuality={airQuality} />
-              </div>
-            </div>
-            {/* 5-Day Forecast */}
-            <div className="bg-white rounded-xl shadow-lg p-6">
-              <ForecastSection forecast={forecast} />
-            </div>
-            {/* Weather Map */}
-            <div className="bg-white rounded-xl shadow-lg p-6">
-              <WeatherMap location={location} />
-            </div>
-          </>
-        )}
+        {/* Main Weather Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Current Weather */}
+          <div className="lg:col-span-2">
+            <CurrentWeather weather={currentWeather} location={location} />
+          </div>
+          {/* Air Quality */}
+          <div>
+            <AirQualitySection airQuality={airQuality} />
+          </div>
+        </div>
+        {/* 5-Day Forecast */}
+        <div className="bg-white rounded-xl shadow-lg p-6">
+          <ForecastSection forecast={forecast} />
+        </div>
+        {/* Weather Map */}
+        <div className="bg-white rounded-xl shadow-lg p-6">
+          <WeatherMap location={location} />
+        </div>
       </div>
     </div>
   );
