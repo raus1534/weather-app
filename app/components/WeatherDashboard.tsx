@@ -13,6 +13,7 @@ import AirQualitySection from "@components/AirQualitySection";
 import WeatherMap from "@components/WeatherMap";
 import { LoadingSkeleton } from "@components/ui/LoadingSkeleton";
 import { ErrorState } from "@components/ui/ErrorState";
+import Footer from "./Footer";
 
 const WeatherDashboard: React.FC = () => {
   const [location, setLocation] = useState<GeoLocation | null>(null);
@@ -137,6 +138,7 @@ const WeatherDashboard: React.FC = () => {
         <div className="bg-white rounded-xl shadow-lg p-6">
           <WeatherMap location={location} />
         </div>
+        <Footer />
       </div>
     </div>
   );
