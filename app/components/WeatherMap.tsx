@@ -7,6 +7,7 @@ interface Props {
 
 const WeatherMap: React.FC<Props> = ({ location }) => {
   const mapRef = useRef<HTMLDivElement>(null);
+  // eslint-disable-next-line
   const mapInstanceRef = useRef<any>(null); // Store the map instance
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -26,6 +27,7 @@ const WeatherMap: React.FC<Props> = ({ location }) => {
     document.body.appendChild(script);
 
     script.onload = () => {
+      // eslint-disable-next-line
       const L = (window as any).L;
       if (!L) {
         setError("Leaflet library not loaded");
@@ -58,6 +60,7 @@ const WeatherMap: React.FC<Props> = ({ location }) => {
         mapInstanceRef.current.setView([location.lat, location.lon], 10);
 
         // Remove existing markers if any
+        // eslint-disable-next-line
         mapInstanceRef.current.eachLayer((layer: any) => {
           if (layer instanceof L.Marker) {
             mapInstanceRef.current.removeLayer(layer);

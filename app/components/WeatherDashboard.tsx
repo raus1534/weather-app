@@ -6,7 +6,7 @@ import {
   ForecastData,
   AirPollution,
 } from "../types/weather";
-import SearchLocation from "@components/SearchLocation";
+import NavSearch from "@/app/components/NavSearch";
 import CurrentWeather from "@components/CurrentWeather";
 import ForecastSection from "@components/ForecastSection";
 import AirQualitySection from "@components/AirQualitySection";
@@ -118,9 +118,8 @@ const WeatherDashboard: React.FC = () => {
     <div className="min-h-screen bg-gradient-to-br from-blue-100 to-blue-300 p-4 md:p-8">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Search Bar */}
-
         <div className="bg-white rounded-xl">
-          <SearchLocation onLocationSelect={handleLocationSelect} />
+          <NavSearch onLocationSelect={handleLocationSelect} />
         </div>
         {/* Main Weather Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

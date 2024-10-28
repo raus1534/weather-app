@@ -1,4 +1,4 @@
-const iconMapping: { [key: string]: string } = {
+export const iconMapping: { [key: string]: string } = {
   "01d": "☀️",
   "01n": "🌙",
   "02d": "⛅",
