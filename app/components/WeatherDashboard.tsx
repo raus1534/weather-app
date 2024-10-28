@@ -20,13 +20,14 @@ const WeatherDashboard: React.FC = () => {
   const [currentWeather, setCurrentWeather] = useState<WeatherData | null>(
     null
   );
-  const [forecast, setForecast] = useState<ForecastData[]>([]);
+  const [forecast, setForecast] = useState<ForecastData | null>();
   const [airQuality, setAirQuality] = useState<AirPollution | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
+  // const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchUserLocation = async () => {
+  const fetchWeatherAndLocation = async () => {
     try {
+      // Fetch user location
       const locationResponse = await fetch("https://ipapi.co/json/");
       if (!locationResponse.ok) {
         throw new Error("Failed to fetch user location.");
@@ -39,18 +40,9 @@ const WeatherDashboard: React.FC = () => {
         name: locationData.city,
         country: locationData.country,
       };
-
       setLocation(userLocation);
-      return userLocation; // Return the user location
-    } catch (err) {
-      console.error("Error fetching location:", err);
-      setError((err as Error).message || "Failed to fetch user location.");
-      setLoading(false);
-    }
-  };
 
-  const fetchWeatherData = async (userLocation: GeoLocation) => {
-    try {
+      // Fetch weather data
       const weatherResponse = await fetch(
         `/api/weather?lat=${userLocation.lat}&lon=${userLocation.lon}`
       );
@@ -63,47 +55,23 @@ const WeatherDashboard: React.FC = () => {
       setCurrentWeather(weatherData.current);
       setForecast(weatherData.forecast);
       setAirQuality(weatherData.airQuality);
+      console.log(weatherData);
     } catch (err) {
-      console.error("Error fetching weather data:", err);
-      setError((err as Error).message || "Failed to fetch weather data.");
-    } finally {
-      setLoading(false);
+      console.error("Error fetching data:", err);
+      setError((err as Error).message || "Failed to fetch data.");
     }
   };
 
+  // Update useEffect to use the new merged function
   useEffect(() => {
-    const loadData = async () => {
-      const userLocation = await fetchUserLocation();
-      if (userLocation) {
-        await fetchWeatherData(userLocation);
-      } else {
-        setLoading(false); // Stop loading if there's no location
-      }
-    };
-    loadData();
+    fetchWeatherAndLocation();
   }, []);
 
+  // Update handleRetry to use the new merged function
   const handleRetry = () => {
     setError(null);
-    setLoading(true);
-    // Re-fetch data when retrying
-    fetchUserLocation().then((userLocation) => {
-      if (userLocation) {
-        fetchWeatherData(userLocation);
-      }
-    });
+    fetchWeatherAndLocation();
   };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-100 to-blue-300 p-4 md:p-8">
-        <div className="max-w-7xl mx-auto">
-          <LoadingSkeleton />
-        </div>
-      </div>
-    );
-  }
-
   if (error) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-100 to-blue-300 p-4 md:p-8">
@@ -115,7 +83,7 @@ const WeatherDashboard: React.FC = () => {
   }
 
   // Check for data before rendering
-  if (!location || !currentWeather || !forecast.length || !airQuality) {
+  if (!location || !currentWeather || !forecast || !airQuality) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-100 to-blue-300 p-4 md:p-8">
         <div className="max-w-7xl mx-auto">
@@ -132,7 +100,6 @@ const WeatherDashboard: React.FC = () => {
         <div className="bg-white rounded-xl shadow-lg p-4">
           <SearchLocation onLocationSelect={setLocation} />
         </div>
-
         {/* Main Weather Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Current Weather */}

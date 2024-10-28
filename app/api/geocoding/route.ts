@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { GeoLocation } from "../../types/weather";
+import { GeoLocation } from "@/app/types/weather";
 
 interface GeoLocationResponse {
   lat: number;

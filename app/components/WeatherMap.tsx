@@ -30,7 +30,7 @@ const WeatherMap: React.FC<Props> = ({ location }) => {
 
       // Add weather layer from OpenWeather
       L.tileLayer(
-        `https://tile.openweathermap.org/map/temp_new/{z}/{x}/{y}.png?appid=${process.env.NEXT_PUBLIC_OPENWEATHER_API_KEY}`,
+        `https://tile.openweathermap.org/map/temp_new/{z}/{x}/{y}.png`,
         {
           attribution: "© OpenWeather",
         }

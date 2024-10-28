@@ -2,7 +2,7 @@ import { AirPollution } from "../types/weather";
 import { Tooltip } from "@components/ui/Tooltip";
 
 interface Props {
-  airQuality: AirPollution;
+  airQuality: AirPollution | null;
 }
 
 const getAQILevel = (aqi: number) => {
@@ -16,13 +16,9 @@ const getAQILevel = (aqi: number) => {
   return levels[aqi as keyof typeof levels] || levels[1]; // Default to "Good" if no level found
 };
 
-const AirQualitySection: React.FC<Props> = ({
-  airQuality,
-}: {
-  airQuality: AirPollution;
-}) => {
+const AirQualitySection: React.FC<Props> = ({ airQuality }: Props) => {
   if (!airQuality) return;
-  const aqiLevel = getAQILevel(airQuality.aqi);
+  const aqiLevel = getAQILevel(airQuality?.list[0]?.main?.aqi);
 
   return (
     <div className="bg-white rounded-xl shadow-lg p-6">
@@ -31,19 +27,25 @@ const AirQualitySection: React.FC<Props> = ({
       <div className="space-y-4">
         <div>
           <div className="flex items-center gap-2 mb-2">
-            <div className={`w-4 h-4 rounded-full ${aqiLevel.color}`}></div>
-            <span className="font-semibold">{aqiLevel.label}</span>
+            <div className={`w-4 h-4 rounded-full ${aqiLevel?.color}`}></div>
+            <span className="font-semibold">{aqiLevel?.label}</span>
           </div>
-          <p className="text-sm text-gray-600">AQI: {airQuality.aqi}</p>
+          <p className="text-sm text-gray-600">
+            AQI: {airQuality?.list[0]?.main?.aqi}
+          </p>
         </div>
 
         <div className="space-y-2">
-          {Object.entries(airQuality.components).map(([key, value]) => (
-            <div className="flex justify-between" key={key}>
-              <span className="text-sm text-gray-600">{key.toUpperCase()}</span>
-              <span className="font-medium">{value} µg/m³</span>
-            </div>
-          ))}
+          {Object.entries(airQuality?.list[0]?.components).map(
+            ([key, value]) => (
+              <div className="flex justify-between" key={key}>
+                <span className="text-sm text-gray-600">
+                  {key.toUpperCase()}
+                </span>
+                <span className="font-medium">{value} µg/m³</span>
+              </div>
+            )
+          )}
         </div>
       </div>
 
@@ -55,7 +57,7 @@ const AirQualitySection: React.FC<Props> = ({
           <div className="flex justify-between">
             <span className="text-sm text-gray-600 cursor-help">PM2.5</span>
             <span className="font-medium">
-              {airQuality.components.pm2_5} µg/m³
+              {airQuality?.list[0]?.components.pm2_5} µg/m³
             </span>
           </div>
         </Tooltip>
@@ -67,7 +69,7 @@ const AirQualitySection: React.FC<Props> = ({
           <div className="flex justify-between">
             <span className="text-sm text-gray-600 cursor-help">PM10</span>
             <span className="font-medium">
-              {airQuality.components.pm10} µg/m³
+              {airQuality?.list[0]?.components.pm10} µg/m³
             </span>
           </div>
         </Tooltip>
