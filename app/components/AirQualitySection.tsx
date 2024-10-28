@@ -49,7 +49,7 @@ const AirQualitySection: React.FC<Props> = ({ airQuality }: Props) => {
         </div>
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-2 mt-2">
         <Tooltip
           label="PM2.5"
           content="Fine particulate matter less than 2.5 micrometers in diameter. Can penetrate deep into the lungs."
