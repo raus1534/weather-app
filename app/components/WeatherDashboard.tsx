@@ -53,7 +53,6 @@ const WeatherDashboard: React.FC = () => {
       setForecast(weatherData.forecast);
       setAirQuality(weatherData.airQuality);
     } catch (err) {
-      console.error("Error fetching weather data:", err);
       setError((err as Error).message || "Failed to fetch weather data.");
     }
   };
@@ -64,7 +63,6 @@ const WeatherDashboard: React.FC = () => {
       const userLocation = await fetchLocation();
       setLocation(userLocation);
     } catch (err) {
-      console.error("Error fetching data:", err);
       setError((err as Error).message || "Failed to fetch data.");
     }
   };

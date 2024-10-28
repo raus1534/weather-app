@@ -42,7 +42,6 @@ const SearchLocation: React.FC<Props> = ({ onLocationSelect }) => {
       setSuggestions(locations);
       setSelectedIndex(-1);
     } catch (err) {
-      console.error("Error fetching locations:", err);
       setError(
         err instanceof Error ? err.message : "Failed to fetch locations"
       );
