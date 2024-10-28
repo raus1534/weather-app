@@ -14,7 +14,6 @@ interface Props {
 
 const CurrentWeather: React.FC<Props> = ({ weather, location }) => {
   if (!weather || !location) return null;
-  console.log(weather, location);
 
   return (
     <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl p-6 text-white">
