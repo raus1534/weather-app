@@ -1,36 +1,48 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Weather App
+
+This is a simple weather app that allows users to view the current weather and temperature for a specified location. The app utilizes the [OpenWeatherMap API](https://openweathermap.org/) to fetch weather data and displays it on a map using the Leaflet library.
+
+## Features
+
+- Displays current weather information (temperature, weather condition) for a specified location.
+- Shows the location on a map with a marker.
+- Uses the OpenWeatherMap API to fetch weather data.
+- Uses Leaflet to render interactive maps.
+
+## Technologies Used
+
+- **React**: For the front-end user interface.
+- **TypeScript**: For type safety in the code.
+- **Leaflet**: For interactive map rendering.
+- **OpenWeatherMap API**: To fetch weather data.
+- **Tailwind CSS**: For styling the app.
+
+## Prerequisites
+
+Before you begin, make sure you have the following installed:
+
+- [Node.js](https://nodejs.org/en/download/)
+- [npm](https://www.npmjs.com/get-npm) or [yarn](https://yarnpkg.com/)
 
 ## Getting Started
 
-First, run the development server:
+Follow these instructions to get a copy of the project up and running on your local machine.
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/raus1534/weather-app.git
+cd weather-app
+```
+
+### 2. Environment Variables
+
+To run this project, you will need to add the following environment variables to your .env file
+
+`OPENWEATHER_API_KEY`
+
+### 3. Run Locally
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
