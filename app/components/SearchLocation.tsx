@@ -51,7 +51,6 @@ const SearchLocation: React.FC<Props> = ({ onLocationSelect }) => {
     }
   };
 
-  // Create a debounced version of fetchSuggestions
   const debouncedFetch = useCallback(
     debounce((query: string) => fetchSuggestions(query), 300),
     []
@@ -98,7 +97,6 @@ const SearchLocation: React.FC<Props> = ({ onLocationSelect }) => {
     }
   };
 
-  // Scroll selected item into view
   useEffect(() => {
     if (selectedIndex >= 0 && suggestionsRef.current) {
       const selectedElement = suggestionsRef.current.children[selectedIndex];
@@ -111,7 +109,6 @@ const SearchLocation: React.FC<Props> = ({ onLocationSelect }) => {
     }
   }, [selectedIndex]);
 
-  // Click outside handler
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -132,8 +129,14 @@ const SearchLocation: React.FC<Props> = ({ onLocationSelect }) => {
   }, []);
 
   return (
-    <div className="relative w-full">
-      <div className="relative">
+    <div className="flex items-center justify-between w-full p-4 bg-white shadow-md rounded-lg">
+      <div className="flex items-center">
+        {/* <img src="/path/to/logo.png" alt="Logo" className="h-10 mr-4" />{" "} */}
+        {/* Replace with your logo path */}
+        <h1 className="text-xl font-semibold">What's the Weather</h1>
+      </div>
+
+      <div className="relative w-full max-w-md ml-4">
         <input
           ref={inputRef}
           type="text"
@@ -154,63 +157,64 @@ const SearchLocation: React.FC<Props> = ({ onLocationSelect }) => {
             <IoCloseCircle className="text-xl" />
           </button>
         )}
-      </div>
 
-      {/* Suggestions dropdown */}
-      {isFocused && (loading || suggestions.length > 0 || error) && (
-        <div
-          ref={suggestionsRef}
-          className="absolute z-10 w-full mt-1 bg-white rounded-lg shadow-lg max-h-96 overflow-y-auto border border-gray-200"
-        >
-          {loading && (
-            <div className="p-4 text-gray-600 flex items-center justify-center">
-              <ImSpinner8 className="animate-spin mr-2" />
-              <span>Searching...</span>
-            </div>
-          )}
-
-          {error && (
-            <div className="p-4 text-red-500 flex items-center">
-              <span className="mr-2">⚠️</span>
-              {error}
-            </div>
-          )}
-
-          {!loading &&
-            !error &&
-            suggestions.map((location, index) => (
-              <div
-                key={`${location.lat}-${location.lon}`}
-                onClick={() => handleLocationSelect(location)}
-                className={`p-4 hover:bg-gray-100 cursor-pointer transition-colors duration-200 ${
-                  selectedIndex === index ? "bg-blue-50" : ""
-                }`}
-              >
-                <div className="flex items-center">
-                  <FaMapMarkerAlt className="text-gray-400 mr-3" />
-                  <div>
-                    <div className="font-medium">{location.name}</div>
-                    <div className="text-sm text-gray-500">
-                      {location.country}
-                    </div>
-                  </div>
-                  <div className="ml-auto text-xs text-gray-400">
-                    {location.lat.toFixed(2)}°, {location.lon.toFixed(2)}°
-                  </div>
-                </div>
-              </div>
-            ))}
-
-          {!loading &&
-            !error &&
-            suggestions.length === 0 &&
-            search.length >= 2 && (
-              <div className="p-4 text-gray-600 text-center">
-                No locations found
+        {/* Suggestions dropdown */}
+        {isFocused && (loading || suggestions.length > 0 || error) && (
+          <div
+            ref={suggestionsRef}
+            className="absolute z-10 w-full mt-1 bg-white rounded-lg shadow-lg max-h-96 overflow-y-auto border border-gray-200"
+            style={{ top: "100%", left: 0 }} // Positioning the dropdown directly below the input
+          >
+            {loading && (
+              <div className="p-4 text-gray-600 flex items-center justify-center">
+                <ImSpinner8 className="animate-spin mr-2" />
+                <span>Searching...</span>
               </div>
             )}
-        </div>
-      )}
+
+            {error && (
+              <div className="p-4 text-red-500 flex items-center">
+                <span className="mr-2">⚠️</span>
+                {error}
+              </div>
+            )}
+
+            {!loading &&
+              !error &&
+              suggestions.map((location, index) => (
+                <div
+                  key={`${location.lat}-${location.lon}`}
+                  onClick={() => handleLocationSelect(location)}
+                  className={`p-4 hover:bg-gray-100 cursor-pointer transition-colors duration-200 ${
+                    selectedIndex === index ? "bg-blue-50" : ""
+                  }`}
+                >
+                  <div className="flex items-center">
+                    <FaMapMarkerAlt className="text-gray-400 mr-3" />
+                    <div>
+                      <div className="font-medium">{location.name}</div>
+                      <div className="text-sm text-gray-500">
+                        {location.country}
+                      </div>
+                    </div>
+                    <div className="ml-auto text-xs text-gray-400">
+                      {location.lat.toFixed(2)}°, {location.lon.toFixed(2)}°
+                    </div>
+                  </div>
+                </div>
+              ))}
+
+            {!loading &&
+              !error &&
+              suggestions.length === 0 &&
+              search.length >= 2 && (
+                <div className="p-4 text-gray-600 text-center">
+                  No locations found
+                </div>
+              )}
+          </div>
+        )}
+      </div>
     </div>
   );
 };
