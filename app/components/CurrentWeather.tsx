@@ -100,9 +100,9 @@ const CurrentWeather: React.FC<Props> = ({ weather, location }) => {
 
             <div>
               <p className="text-sm opacity-75">Humidity</p>
-              <p className="font-semibold">
+              <p className="font-semibold whitespace-nowrap">
                 {weather.main.humidity || 0}% -{" "}
-                <span className=" text-xs">
+                <span className="text-xs">
                   {getHumidityDescription(weather.main.humidity)}
                 </span>
               </p>

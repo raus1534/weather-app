@@ -23,6 +23,7 @@ const WeatherDashboard: React.FC = () => {
   const [forecast, setForecast] = useState<ForecastData | null>();
   const [airQuality, setAirQuality] = useState<AirPollution | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const fetchLocation = async (): Promise<GeoLocation> => {
     const locationResponse = await fetch("https://ipapi.co/json/");
@@ -41,6 +42,7 @@ const WeatherDashboard: React.FC = () => {
 
   const fetchWeatherData = async (location: GeoLocation) => {
     try {
+      setLoading(true);
       const weatherResponse = await fetch(
         `/api/weather?lat=${location.lat}&lon=${location.lon}`
       );
@@ -53,6 +55,7 @@ const WeatherDashboard: React.FC = () => {
       setCurrentWeather(weatherData.current);
       setForecast(weatherData.forecast);
       setAirQuality(weatherData.airQuality);
+      setLoading(false);
     } catch (err) {
       setError((err as Error).message || "Failed to fetch weather data.");
     }
@@ -101,7 +104,7 @@ const WeatherDashboard: React.FC = () => {
     );
   }
 
-  if (!location || !currentWeather || !forecast || !airQuality) {
+  if (!location || !currentWeather || !forecast || !airQuality || loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-100 to-blue-300 p-4 md:p-8">
         <div className="max-w-7xl mx-auto">
@@ -116,7 +119,7 @@ const WeatherDashboard: React.FC = () => {
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Search Bar */}
 
-        <div className="bg-white rounded-xl shadow-lg p-4">
+        <div className="bg-white rounded-xl">
           <SearchLocation onLocationSelect={handleLocationSelect} />
         </div>
         {/* Main Weather Grid */}
