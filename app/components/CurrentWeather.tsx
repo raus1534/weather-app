@@ -3,6 +3,7 @@ import { WeatherData, GeoLocation } from "../types/weather";
 import {
   convertTimestamp,
   getHumidityDescription,
+  getTemperature,
   getTimeZone,
 } from "@utils/helper";
 
@@ -13,6 +14,7 @@ interface Props {
 
 const CurrentWeather: React.FC<Props> = ({ weather, location }) => {
   if (!weather || !location) return null;
+  console.log(weather, location);
 
   return (
     <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl p-6 text-white">
@@ -24,7 +26,7 @@ const CurrentWeather: React.FC<Props> = ({ weather, location }) => {
                 {location.name}, {location.country}
               </h2>
               <p className="text-5xl font-bold mb-4">
-                {weather.main.temp.toFixed(0)}°C
+                {getTemperature(weather.main.temp, 2)}
               </p>
               <p className="text-xl capitalize">
                 {weather.weather[0]?.description || "Not Available"}
@@ -40,16 +42,20 @@ const CurrentWeather: React.FC<Props> = ({ weather, location }) => {
               className="w-40 h-40"
             />
           </div>
-          <div className="mt-4 grid grid-cols-2 gap-5">
+          <div className="mt-4 w-full grid md:grid-cols-3 grid-cols-2 gap-5">
             <div>
               <p className="text-sm opacity-75">Feels like</p>
               <p className="font-semibold">
-                {weather.main.feels_like.toFixed(1) || 0}°C
+                {getTemperature(weather.main.feels_like, 1)}
               </p>
             </div>
             <div>
-              <p className="text-sm opacity-75">Timezone</p>
-              <p className="font-semibold">{getTimeZone(weather?.timezone)}</p>
+              <p className="text-sm opacity-75">Longitude</p>
+              <p className="font-semibold">{location?.lon?.toFixed(3) || 0}</p>
+            </div>
+            <div>
+              <p className="text-sm opacity-75">Latitude</p>
+              <p className="font-semibold">{location?.lat?.toFixed(3) || 0}</p>
             </div>
 
             <div>
@@ -61,6 +67,12 @@ const CurrentWeather: React.FC<Props> = ({ weather, location }) => {
             <div>
               <p className="text-sm opacity-75">Cloud Cover</p>
               <p className="font-semibold">{weather.clouds.all || 0}%</p>
+            </div>
+            <div>
+              <p className="text-sm opacity-75">Ground Pressure</p>
+              <p className="font-semibold">
+                {weather?.main?.grnd_level || 0} hPa
+              </p>
             </div>
             <div>
               <p className="text-sm opacity-75">Sunrise</p>
@@ -80,6 +92,12 @@ const CurrentWeather: React.FC<Props> = ({ weather, location }) => {
                 )?.toUpperCase() || ""}
               </p>
             </div>
+
+            <div>
+              <p className="text-sm opacity-75">Timezone</p>
+              <p className="font-semibold">{getTimeZone(weather?.timezone)}</p>
+            </div>
+
             <div>
               <p className="text-sm opacity-75">Humidity</p>
               <p className="font-semibold">

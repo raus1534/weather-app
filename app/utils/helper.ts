@@ -30,6 +30,10 @@ export const getTimeZone = (timezone: number) => {
   return `UTC +${hours}:${minutes < 10 ? "0" : ""}${minutes}`;
 };
 
+export const getTemperature = (temp: number, fixTo: number) => {
+  return Number.isInteger(temp) ? `${temp}°C` : `${temp.toFixed(fixTo)}°C`;
+};
+
 export const getAQILevel = (aqi: number) => {
   const levels = {
     1: { label: "Good", color: "bg-green-500" },

@@ -114,6 +114,7 @@ const WeatherDashboard: React.FC = () => {
     <div className="min-h-screen bg-gradient-to-br from-blue-100 to-blue-300 p-4 md:p-8">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Search Bar */}
+
         <div className="bg-white rounded-xl shadow-lg p-4">
           <SearchLocation onLocationSelect={handleLocationSelect} />
         </div>

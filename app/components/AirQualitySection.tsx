@@ -42,6 +42,7 @@ const AirQualitySection: React.FC<Props> = ({ airQuality }: Props) => {
           {Object.entries(airQuality?.list[0]?.components).map(
             ([key, value]) => (
               <Tooltip
+                key={key}
                 label={key.toUpperCase()}
                 content={airQualityResult[key]}
               >
