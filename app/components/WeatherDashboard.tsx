@@ -14,7 +14,6 @@ import WeatherMap from "@components/WeatherMap";
 import { LoadingSkeleton } from "@components/ui/LoadingSkeleton";
 import { ErrorState } from "@components/ui/ErrorState";
 
-// WeatherDashboard component
 const WeatherDashboard: React.FC = () => {
   const [location, setLocation] = useState<GeoLocation | null>(null);
   const [currentWeather, setCurrentWeather] = useState<WeatherData | null>(
@@ -22,29 +21,27 @@ const WeatherDashboard: React.FC = () => {
   );
   const [forecast, setForecast] = useState<ForecastData | null>();
   const [airQuality, setAirQuality] = useState<AirPollution | null>(null);
-  // const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchWeatherAndLocation = async () => {
+  const fetchLocation = async (): Promise<GeoLocation> => {
+    const locationResponse = await fetch("https://ipapi.co/json/");
+    if (!locationResponse.ok) {
+      throw new Error("Failed to fetch user location.");
+    }
+    const locationData = await locationResponse.json();
+
+    return {
+      lat: locationData.latitude || 0,
+      lon: locationData.longitude || 0,
+      name: locationData.city,
+      country: locationData.country,
+    };
+  };
+
+  const fetchWeatherData = async (location: GeoLocation) => {
     try {
-      // Fetch user location
-      const locationResponse = await fetch("https://ipapi.co/json/");
-      if (!locationResponse.ok) {
-        throw new Error("Failed to fetch user location.");
-      }
-      const locationData = await locationResponse.json();
-
-      const userLocation: GeoLocation = {
-        lat: locationData.latitude,
-        lon: locationData.longitude,
-        name: locationData.city,
-        country: locationData.country,
-      };
-      setLocation(userLocation);
-
-      // Fetch weather data
       const weatherResponse = await fetch(
-        `/api/weather?lat=${userLocation.lat}&lon=${userLocation.lon}`
+        `/api/weather?lat=${location.lat}&lon=${location.lon}`
       );
 
       if (!weatherResponse.ok) {
@@ -55,23 +52,46 @@ const WeatherDashboard: React.FC = () => {
       setCurrentWeather(weatherData.current);
       setForecast(weatherData.forecast);
       setAirQuality(weatherData.airQuality);
-      console.log(weatherData);
+    } catch (err) {
+      console.error("Error fetching weather data:", err);
+      setError((err as Error).message || "Failed to fetch weather data.");
+    }
+  };
+
+  // Initialize data on first load
+  const initializeData = async () => {
+    try {
+      const userLocation = await fetchLocation();
+      setLocation(userLocation);
     } catch (err) {
       console.error("Error fetching data:", err);
       setError((err as Error).message || "Failed to fetch data.");
     }
   };
 
-  // Update useEffect to use the new merged function
+  // Fetch initial location on component mount
   useEffect(() => {
-    fetchWeatherAndLocation();
+    initializeData();
   }, []);
 
-  // Update handleRetry to use the new merged function
+  // Fetch weather data whenever location changes
+  useEffect(() => {
+    if (location) {
+      fetchWeatherData(location);
+    }
+  }, [location]);
+
   const handleRetry = () => {
     setError(null);
-    fetchWeatherAndLocation();
+    initializeData();
   };
+
+  // Handle location selection from search
+  const handleLocationSelect = (newLocation: GeoLocation) => {
+    setError(null); // Clear any existing errors
+    setLocation(newLocation);
+  };
+
   if (error) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-100 to-blue-300 p-4 md:p-8">
@@ -82,7 +102,6 @@ const WeatherDashboard: React.FC = () => {
     );
   }
 
-  // Check for data before rendering
   if (!location || !currentWeather || !forecast || !airQuality) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-100 to-blue-300 p-4 md:p-8">
@@ -98,7 +117,7 @@ const WeatherDashboard: React.FC = () => {
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Search Bar */}
         <div className="bg-white rounded-xl shadow-lg p-4">
-          <SearchLocation onLocationSelect={setLocation} />
+          <SearchLocation onLocationSelect={handleLocationSelect} />
         </div>
         {/* Main Weather Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
