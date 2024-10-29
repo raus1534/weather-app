@@ -4,7 +4,7 @@ export default function Footer() {
   return (
     <footer className="w-full rounded-xl py-4 bg-gray-800 text-white text-center">
       <p className="md:text-sm text-xs">
-        &copy; {new Date().getFullYear()} | <b> {`What's the Weather`} </b> |
+        &copy; {new Date().getFullYear()} | <b> {`What's the Weather!?`} </b> |
         Developed by
         <a
           href="https://github.com/raus1534"

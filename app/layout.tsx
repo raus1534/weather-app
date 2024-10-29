@@ -5,7 +5,7 @@ import "./globals.css";
 const spaceGrotesk = Space_Grotesk({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "What's The Weather?",
+  title: "What's The Weather!?",
   description:
     "Get real-time weather updates with What's The Weather? – a simple and accurate weather app powered by OpenWeather API.",
 };
