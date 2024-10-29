@@ -3,7 +3,7 @@ import React from "react";
 export default function Footer() {
   return (
     <footer className="w-full rounded-xl py-4 bg-gray-800 text-white text-center">
-      <p className="text-sm">
+      <p className="md:text-sm text-xs">
         &copy; {new Date().getFullYear()} | <b> {`What's the Weather`} </b> |
         Developed by
         <a
