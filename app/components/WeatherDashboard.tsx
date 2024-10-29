@@ -26,16 +26,17 @@ const WeatherDashboard: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
 
   const fetchLocation = async (): Promise<GeoLocation> => {
-    const locationResponse = await fetch("https://ipapi.co/json/");
+    const locationResponse = await fetch("/api/location/");
     if (!locationResponse.ok) {
       throw new Error("Failed to fetch user location.");
     }
     const locationData = await locationResponse.json();
+    console.log(locationData)
 
     return {
-      lat: locationData.latitude || 0,
-      lon: locationData.longitude || 0,
-      name: locationData.city,
+      lat: locationData.lat || 0,
+      lon: locationData.lon || 0,
+      name: locationData.name,
       country: locationData.country,
     };
   };
@@ -66,6 +67,7 @@ const WeatherDashboard: React.FC = () => {
     try {
       const userLocation = await fetchLocation();
       setLocation(userLocation);
+      console.log(userLocation)
     } catch (err) {
       setError((err as Error).message || "Failed to fetch data.");
     }
