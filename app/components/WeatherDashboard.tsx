@@ -25,6 +25,21 @@ const WeatherDashboard: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
 
+  const fetchLocation = async (): Promise<GeoLocation> => {
+    const locationResponse = await fetch("https://ipapi.co/json/");
+    if (!locationResponse.ok) {
+      throw new Error("Failed to fetch user location.");
+    }
+    const locationData = await locationResponse.json();
+
+    return {
+      lat: locationData.latitude || 0,
+      lon: locationData.longitude || 0,
+      name: locationData.city,
+      country: locationData.country,
+    };
+  };
+
   const fetchWeatherData = async (location: GeoLocation) => {
     try {
       setLoading(true);
@@ -37,7 +52,6 @@ const WeatherDashboard: React.FC = () => {
       }
 
       const weatherData = await weatherResponse.json();
-      console.log(weatherData);
       setCurrentWeather(weatherData.current);
       setForecast(weatherData.forecast);
       setAirQuality(weatherData.airQuality);
@@ -47,59 +61,17 @@ const WeatherDashboard: React.FC = () => {
     }
   };
 
-  const fetchReverseGeocoding = async (lat: number, lon: number) => {
-    try {
-      const reverseGeoResponse = await fetch(
-        `/api/location?lat=${lat}&lon=${lon}`
-      );
-      if (!reverseGeoResponse.ok) {
-        throw new Error("Failed to fetch location data");
-      }
-      const locationData = await reverseGeoResponse.json();
-      if (!locationData) throw new Error("Could Fetch Location");
-      console.log(locationData, "kajshd");
-      return locationData;
-    } catch (error) {
-      throw new Error(
-        (error as Error).message || "Failed to fetch location details."
-      );
-    }
-  };
-
+  // Initialize data on first load
   const initializeData = async () => {
-    setLoading(true);
     try {
-      // Use the browser's geolocation API
-      if ("geolocation" in navigator) {
-        navigator.geolocation.getCurrentPosition(
-          async (position) => {
-            const { latitude, longitude } = position.coords;
-            console.log(latitude, longitude);
-            const userLocation = await fetchReverseGeocoding(
-              latitude,
-              longitude
-            );
-            setLocation({
-              lat: latitude,
-              lon: longitude,
-              country: userLocation.country,
-              name: userLocation.city,
-            });
-          },
-          (error) => {
-            setError("Unable to retrieve location: " + error.message);
-          }
-        );
-      } else {
-        setError("Geolocation is not supported by this browser.");
-      }
+      const userLocation = await fetchLocation();
+      setLocation(userLocation);
     } catch (err) {
       setError((err as Error).message || "Failed to fetch data.");
-    } finally {
-      setLoading(false);
     }
   };
 
+  // Fetch initial location on component mount
   useEffect(() => {
     initializeData();
   }, []);
